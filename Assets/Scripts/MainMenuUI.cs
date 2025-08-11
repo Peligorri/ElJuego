@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 public class MainMenuUI : MonoBehaviour {
 
     public GameObject instruccionesPanel; 
+    public GameObject dificultadPanel; 
     public GameObject botonesPanel; 
   
 
@@ -18,6 +19,7 @@ public class MainMenuUI : MonoBehaviour {
 
     public void OnCerrarBtnPressed(){
         instruccionesPanel.SetActive(false);
+        dificultadPanel.SetActive(false);
         botonesPanel.SetActive(true);
     }
 
@@ -26,6 +28,11 @@ public class MainMenuUI : MonoBehaviour {
             SettingsController.Instance.ShowSettings();
         else
             Debug.LogWarning("No se encontró el SettingsManager.");
+    }
+
+    public void OnDifficultPressed(){
+        dificultadPanel.SetActive(true);
+        botonesPanel.SetActive(false);
     }
 
     public void OnQuitPressed(){
