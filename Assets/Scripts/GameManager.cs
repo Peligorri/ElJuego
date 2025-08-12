@@ -55,6 +55,7 @@ public class GameManager : MonoBehaviour{
     public AudioClip btnClip;
 
     public GameObject persistentObjectPrefab;
+    
 
 
     int lastGuessedIndex = -1;
@@ -97,16 +98,34 @@ public class GameManager : MonoBehaviour{
     }
 
 
-    List<WordEntry> GetRandomWords(int count){
+    List<WordEntry> GetRandomWords(int count)
+    {
+        // Leemos la dificultad actual guardada
+        int dificultadActual = PlayerPrefs.GetInt("Dificultad", 0);
 
+        string filtroDificultad = "";
+
+        // Asignamos el texto según el número
+        if (dificultadActual == 0) filtroDificultad = "facil";
+        else if (dificultadActual == 1) filtroDificultad = "normal";
+        else if (dificultadActual == 2) filtroDificultad = "dificil";
+
+        // Filtramos la lista original según dificultad
+        List<WordEntry> palabrasFiltradas = allWords
+            .Where(w => w.dificultad == filtroDificultad)
+            .ToList();
+
+        // Copia para sacar palabras aleatorias sin repetición
+        List<WordEntry> copy = new List<WordEntry>(palabrasFiltradas);
         List<WordEntry> result = new List<WordEntry>();
-        List<WordEntry> copy = new List<WordEntry>(allWords);
 
-        for (int i = 0; i < count && copy.Count > 0; i++){
+        for (int i = 0; i < count && copy.Count > 0; i++)
+        {
             int index = Random.Range(0, copy.Count);
             result.Add(copy[index]);
             copy.RemoveAt(index);
         }
+
         return result;
     }
 
