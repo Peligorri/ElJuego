@@ -9,6 +9,7 @@ public class WordEntry{
     public string lemma;
     public string definition;
     public bool guessed;
+    public string dificultad;
 
     public string GetPrefix() {
 
