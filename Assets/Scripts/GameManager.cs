@@ -23,6 +23,15 @@ public class GameManager : MonoBehaviour{
     public Transform summaryContent;
     public GameObject summaryItemPrefab;
 
+    [Header("Pantalla ajustes")]
+    public GameObject settingsPanel; 
+    public Button musicToggleButton;
+    public TextMeshProUGUI musicButtonText;
+    public Button soundToggleButton;
+    public TextMeshProUGUI soundButtonText;
+    public AudioSource musicSource;
+    public AudioSource[] soundSources;
+
     [Header("Data")]
     public List<WordEntry> allWords; // Puedes rellenarlo a mano en el inspector por ahora
 
@@ -54,8 +63,6 @@ public class GameManager : MonoBehaviour{
     public AudioClip coinClip;
     public AudioClip btnClip;
 
-    public GameObject persistentObjectPrefab;
-    
 
 
     int lastGuessedIndex = -1;
@@ -63,10 +70,43 @@ public class GameManager : MonoBehaviour{
     float startTime;
 
     void Awake(){
-        if (SettingsController.Instance == null)
+        int musicBool = PlayerPrefs.GetInt("Musica", 1); // 1 = encendida por defecto
+
+        if (musicBool == 0)
         {
-            GameObject obj = Instantiate(persistentObjectPrefab);
-            DontDestroyOnLoad(obj);
+            // Música apagada
+            musicButtonText.text = "Off";
+            musicSource.mute = true;
+        }
+        else if (musicBool == 1)
+        {
+            // Música encendida
+            musicButtonText.text = "On";
+            musicSource.mute = false;
+        }
+
+
+        int soundBool = PlayerPrefs.GetInt("Sonido", 1); // 1 = encendido por defecto
+
+        if (soundBool == 0)
+        {
+            // Sonido apagado
+            soundButtonText.text = "Off";
+            foreach (var source in soundSources)
+            {
+                if (source != null)
+                    source.mute = true;
+            }
+        }
+        else if (soundBool == 1)
+        {
+            // Sonido encendido
+            soundButtonText.text = "On";
+            foreach (var source in soundSources)
+            {
+                if (source != null)
+                    source.mute = false;
+            }
         }
     }
 
@@ -91,10 +131,7 @@ public class GameManager : MonoBehaviour{
 
     public void OpenSettingsPanel()
     {
-        if (SettingsController.Instance != null)
-            SettingsController.Instance.ShowSettings();
-        else
-            Debug.LogWarning("No se encontró el SettingsManager.");
+        settingsPanel.SetActive(true);
     }
 
 

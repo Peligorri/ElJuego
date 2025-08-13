@@ -9,6 +9,8 @@ public class SettingsManager : MonoBehaviour
     [Header("Botones de configuración")]
     public Button musicToggleButton;
     public TextMeshProUGUI musicButtonText;
+    public GameObject settingsPanel; 
+    public GameObject botonesPanel;
 
     public Button soundToggleButton;
     public TextMeshProUGUI soundButtonText;
@@ -20,52 +22,18 @@ public class SettingsManager : MonoBehaviour
     [Header("Texto High Score")]
     public TextMeshProUGUI highScoreText;
 
-    public GameObject settingsPanel;
-
     private bool musicOn;
     private bool soundOn;
 
-    void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject); // Evita duplicados
-            return;
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject); // Hace persistente el objeto
-    }
 
     void Start()
     {
-        if (settingsPanel != null)
-            settingsPanel.SetActive(false);
 
-        // Cargar preferencias
-        musicOn = PlayerPrefs.GetInt("MusicOn", 1) == 1;
-        soundOn = PlayerPrefs.GetInt("SoundOn", 1) == 1;
-
-        UpdateMusicState();
-        UpdateSoundState();
 
         int highScore = PlayerPrefs.GetInt("BestScore", 0);
         if (highScoreText != null)
             highScoreText.text = highScore.ToString("0000");
 
-        // Listeners solo si los botones están activos (en el menú)
-        if (musicToggleButton != null)
-            musicToggleButton.onClick.AddListener(ToggleMusic);
-        if (soundToggleButton != null)
-            soundToggleButton.onClick.AddListener(ToggleSound);
-    }
-
-    public void ToggleMusic()
-    {
-        musicOn = !musicOn;
-        PlayerPrefs.SetInt("MusicOn", musicOn ? 1 : 0);
-        PlayerPrefs.Save();
-        UpdateMusicState();
     }
 
     public void ToggleSound()
@@ -84,21 +52,57 @@ public class SettingsManager : MonoBehaviour
 
     public void UpdateMusicState()
     {
-        if (musicButtonText != null)
-            musicButtonText.text = musicOn ? "On" : "Off";
-        if (musicSource != null)
-            musicSource.mute = !musicOn;
+        // Lee el estado actual
+        int musicBool = PlayerPrefs.GetInt("Musica", 1);
+
+        if (musicBool == 0)
+        {
+            // Apagar música
+            musicButtonText.text = "Off";
+            musicSource.mute = true;
+            PlayerPrefs.SetInt("Musica", 1);
+        }
+        else if (musicBool == 1)
+        {
+            // Encender música
+            musicButtonText.text = "On";
+            musicSource.mute = false;
+            PlayerPrefs.SetInt("Musica", 0);
+        }
+
+        PlayerPrefs.Save();
     }
 
     public void UpdateSoundState()
     {
-        if (soundButtonText != null)
-            soundButtonText.text = soundOn ? "On" : "Off";
-        foreach (var source in soundSources)
+
+        // Lee el estado actual
+        int soundBool = PlayerPrefs.GetInt("Sonido", 1);
+
+        if (soundBool == 0)
         {
-            if (source != null)
-                source.mute = !soundOn;
+            // Apagar música
+            soundButtonText.text = "Off";
+            foreach (var source in soundSources)
+            {
+                if (source != null)
+                    source.mute = true; // Mutear
+            }
+            PlayerPrefs.SetInt("Sonido", 1);
         }
+        else if (soundBool == 1)
+        {
+            // Encender música
+            soundButtonText.text = "On";
+            foreach (var source in soundSources)
+            {
+                if (source != null)
+                    source.mute = false; // Desmutear
+            }
+            PlayerPrefs.SetInt("Sonido", 0);
+        }
+
+        PlayerPrefs.Save();
     }
 
     public static bool AreSoundsEnabled()
@@ -106,15 +110,9 @@ public class SettingsManager : MonoBehaviour
         return PlayerPrefs.GetInt("SoundOn", 1) == 1;
     }
 
-    public void CloseSettingsPanel()
-    {
-        if (settingsPanel != null)
-            settingsPanel.SetActive(false);
+    public void OnCerrarBtnPressed(){
+        settingsPanel.SetActive(false);
     }
 
-    public void ShowSettingsPanel()
-    {
-        if (settingsPanel != null)
-            settingsPanel.SetActive(true);
-    }
+  
 }

@@ -2,13 +2,21 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Text;
 using TMPro;
+using UnityEngine.UI;
 
 public class MainMenuUI : MonoBehaviour {
 
     public GameObject instruccionesPanel; 
+    public GameObject settingsPanel; 
     public GameObject dificultadPanel; 
     public GameObject botonesPanel; 
     public TextMeshProUGUI dificultadTxt;
+    public Button musicToggleButton;
+    public TextMeshProUGUI musicButtonText;
+    public Button soundToggleButton;
+    public TextMeshProUGUI soundButtonText;
+    public AudioSource musicSource;
+    public AudioSource[] soundSources;
   
     void Awake(){
 
@@ -25,6 +33,45 @@ public class MainMenuUI : MonoBehaviour {
                 dificultadTxt.text = "Normal";
             } else if (dificultadActual == 2){
                 dificultadTxt.text = "Difícil";
+            }
+        }
+
+        int musicBool = PlayerPrefs.GetInt("Musica", 1); // 1 = encendida por defecto
+
+        if (musicBool == 0)
+        {
+            // Música apagada
+            musicButtonText.text = "Off";
+            musicSource.mute = true;
+        }
+        else if (musicBool == 1)
+        {
+            // Música encendida
+            musicButtonText.text = "On";
+            musicSource.mute = false;
+        }
+
+
+        int soundBool = PlayerPrefs.GetInt("Sonido", 1); // 1 = encendido por defecto
+
+        if (soundBool == 0)
+        {
+            // Sonido apagado
+            soundButtonText.text = "Off";
+            foreach (var source in soundSources)
+            {
+                if (source != null)
+                    source.mute = true;
+            }
+        }
+        else if (soundBool == 1)
+        {
+            // Sonido encendido
+            soundButtonText.text = "On";
+            foreach (var source in soundSources)
+            {
+                if (source != null)
+                    source.mute = false;
             }
         }
         
@@ -47,10 +94,8 @@ public class MainMenuUI : MonoBehaviour {
     }
 
     public void OnSettingsPressed(){
-    	if (SettingsController.Instance != null)
-            SettingsController.Instance.ShowSettings();
-        else
-            Debug.LogWarning("No se encontró el SettingsManager.");
+        settingsPanel.SetActive(true);
+        //botonesPanel.SetActive(false);
     }
 
     public void OnDifficultPressed(){
